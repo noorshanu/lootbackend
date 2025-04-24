@@ -31,7 +31,7 @@ app.get('/health', async (req, res) => {
       timestamp: new Date().toISOString(),
       devnet: {
         operational: devnetStatus,
-        network: process.env.SOLANA_NETWORK || 'devnet'
+        network: process.env.SOLANA_NETWORK || 'mainnet-beta'
       }
     });
   } catch (error) {

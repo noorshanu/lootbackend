@@ -6,7 +6,7 @@ let isDevnet = false;
 const setupSolanaConnection = async () => {
   try {
     // Connect to Solana network (mainnet-beta for production, devnet for testing)
-    const network = process.env.SOLANA_NETWORK || 'devnet';
+    const network = process.env.SOLANA_NETWORK || 'mainnet-beta';
     console.log(`[DEBUG] Attempting to connect to Solana ${network}...`);
     
     connection = new Connection(clusterApiUrl(network), 'confirmed');
