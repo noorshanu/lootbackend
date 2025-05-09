@@ -1,7 +1,7 @@
 const express = require('express');
 const cors = require('cors');
 const dotenv = require('dotenv');
-const { setupSolanaConnection, checkDevnetStatus } = require('./solana/connection');
+const { setupSolanaConnection, checkDevnetStatus, getConnection } = require('./solana/connection');
 const lootboxRoutes = require('./routes/lootbox.routes');
 
 dotenv.config();
@@ -71,25 +71,31 @@ app.get('/health', async (req, res) => {
   }
 });
 
-// Initialize Solana connection
-const startServer = async () => {
+async function startServer() {
   try {
     console.log('[DEBUG] Starting server initialization...');
     
-    // Setup Solana connection
-    await setupSolanaConnection();
+    // Initialize Solana connection
+    const connection = getConnection();
+    console.log('[DEBUG] Solana connection initialized');
     
-    // Check devnet status
-    await checkDevnetStatus();
+    // Get recent blockhash to verify connection
+    const recentBlockhash = await connection.getRecentBlockhash();
+    console.log(`[DEBUG] Recent blockhash: ${recentBlockhash.blockhash}`);
     
+    // Get network version
+    const version = await connection.getVersion();
+    console.log(`[DEBUG] Solana version: ${version['solana-core']}`);
+
+    // Start Express server
     app.listen(PORT, () => {
       console.log(`[DEBUG] Server is running on port ${PORT}`);
-      console.log(`[DEBUG] Environment: ${process.env.NODE_ENV || 'development'}`);
+      console.log(`[DEBUG] Environment: ${process.env.NODE_ENV}`);
     });
   } catch (error) {
     console.error('[ERROR] Failed to start server:', error);
     process.exit(1);
   }
-};
+}
 
 startServer(); 
